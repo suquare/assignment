@@ -1,0 +1,18 @@
+trigger UpdateProfileOnContact on Account (after insert, after update) { 		//after because basis on Update it is changed
+    //A list for Account ID with First name, Last Name ID when they are new and later map for updated one
+	List <Contact> listContact = new List<Contact> ([SELECT Id,FirstName, LastName, AccountId FROM Contact WHERE AccountId IN : Trigger.new]);
+	Map<Id, Account> mapAccountIdAccount = new Map<Id, Account>([SELECT Id, Website  FROM Account WHERE Id IN : Trigger.new]);
+    List <Contact> listContactToUpdate = new List<Contact>();
+    if(Trigger.isInsert || Trigger.isUpdate && Trigger.isAfter) //Fire Trigger when only it is updated or inserted
+        for(Contact obj : listContact) {
+            
+            Account objAccount = mapAccountIdAccount.get(obj.AccountId);
+            
+            String strFirstName = obj.FirstName.subString(0,1); // to get a substring of the first letter of the first name, we use the function subString and (0,1) means the start counting from index i.e 0
+            obj.Profile__c = objAccount.website + '/' + strFirstname + obj.Lastname; //Here we get the Profile name as wanted "Website+FirstLetter+LastName"
+            listContactToUpdate.add(obj);
+        }
+    if(listContactToUpdate.size() > 0) //it will do the below code only if there is atleast 1 update
+    upsert listContactToUpdate; //we use upsert instead of update , because in upsert if there are no existing record it will create a new record, whereas update is only for existing record
+    
+   }
