@@ -1,0 +1,30 @@
+trigger UpdateAccountFieldTrigger on Opportunity (after insert, after update) {  //since we are creating changes after trigger , so use after 
+	//empty account list
+	list<Account> lstAccounts = new List<Account>();
+    // to store the account Ids
+    Set<Id> setAccountIds = new Set<Id>();    
+    Map<Id, Opportunity> mapAcctIdOpp = new Map<Id, Opportunity> (); //related aact ID and Opportunity
+    if(Trigger.isInsert || Trigger.isUpdate && Trigger.isAfter ){  //only start the below code if triggers are Insert or update and after
+    for(Opportunity obj : Trigger.new ) {
+        
+        setAccountIds.add(obj.Account.id); // storing ID of all related account
+    }
+    for(Opportunity obj : Trigger.new){
+        mapAcctIdOpp.put(obj.AccountId, obj);
+    }
+    for(Account obj : [SELECT id, is_gold__c FROM Account WHERE Id IN : setAccountIds ] ) {
+        if(mapAcctIdOpp.get(obj.id).Amount > 20000) {   //logic where the Amount is > 20000
+            obj.is_gold__c = TRUE;	//change value to true
+            lstAccounts.add(obj);    //save it on a new list
+        }
+        else {
+            obj.is_gold__c = FALSE;   //if no change , then keep it false itself
+        lstAccounts.add(obj);
+            
+            }
+    }
+    if(lstAccounts.size() > 0) //if the list account size is greater then 1 , only then execute the DML statement of upsert
+    upsert lstAccounts;
+   }
+ }
+    
