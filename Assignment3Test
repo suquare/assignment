@@ -1,0 +1,15 @@
+// Simple way to create a new Contact and to check the checkbox
+
+trigger CreateDefContact on Account(after insert)
+{
+    Account acc = [SELECT Id,Only_Default_Contact FROM account WHERE Id IN : trigger.new];
+    Contact con = new Contact();
+    con.FirstName = "Info";
+    con.LastName = "Default";
+    con.Email = "info@websitedomain.tld"
+    con.AccountId = acc.id;
+
+    insert con;
+    acc.Only_Default_Contact__c = True;
+    update acc;
+}

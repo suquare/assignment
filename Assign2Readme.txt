@@ -11,7 +11,9 @@ Step 5 - Click New to create a new custom field called Profile.
 Step 6 - Choose Text (255) 
 Step 7- Insert the field label as Profile
 Step 8 - Click next, next and save
-Step 9 - Go to Developers Option.
+Step 9 - Go to Developers Console or we can use VS code.
 Step10 - Go to file, Click New Apex Triggers
 Step 11 - Give it a Name
 Step 12 - sObject would be Account here , because we are checking the change through Account.
+Step 13- Run the code
+Step 14 - To test - Add a website name to a Account and save, Under Profile it will display as website+FirstLetter(Firstname)+LastName

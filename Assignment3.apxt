@@ -1,0 +1,42 @@
+trigger Accounttrig on Account (after insert) { //Creating trigger1 
+    if(trigger.isAfter && trigger.isInsert) {
+        ContactNameUpdate.newContactCreation(Trigger.new);
+    }
+}
+
+
+trigger ContactTrigger on Contact (after insert){ //creating trigger2 for contacts
+    if(trigger.isAfter && trigger.isInsert) {
+        ContactNameUpdate.updateCheckboxOnAcc(Trigger.new);
+    }
+}
+
+
+public class ContactNameUpdate {    //when new account is added, we create contact 
+    public static void newContactCreation (List<Account>accList){
+        List<Contact> contactList = new List<Contact>();
+        for(Account acc : accList){
+            Contact con = new Contact(AccountId = acc.Id);
+            con.AccountId = acc.Id;
+            con.FirstName = 'Info';
+            con.LastName = 'Default';
+            con.Email = 'info@websitedomain.tld';
+            con.Only_Default_Contact__c = TRUE;
+            contactList.add(con);
+        }
+        insert contactList;
+    }
+
+    public static void updateCheckboxOnAcc(List<Account> Acclst){
+        Set<Id> accountsId = new Set<Id>();
+        List <Account> updatedAccounts = new List<Account>)();
+        for (Account updatedAccounts : Acclst ) {
+            if(updatedAccounts.Contacts.size()>1){
+                updatedAccounts.Only_Default_Contact__c = False;
+            }
+        }
+        if(Acclst.size()>0){
+            update Acclst
+        }
+    }
+}
